@@ -1,4 +1,5 @@
-# Reunion [![C/C++ CI](https://github.com/s1lentq/reunion/actions/workflows/build.yml/badge.svg)](https://github.com/s1lentq/reunion/actions/workflows/build.yml) [![GitHub release (by tag)](https://img.shields.io/github/downloads/s1lentq/reunion/latest/total)](https://github.com/s1lentq/reunion/releases/latest) ![GitHub all releases](https://img.shields.io/github/downloads/s1lentq/reunion/total) [![Percentage of issues still open](http://isitmaintained.com/badge/open/s1lentq/reunion.svg)](http://isitmaintained.com/project/s1lentq/reunion "Percentage of issues still open") [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+# Reunion [![C/C++ CI](https://github.com/rehlds/reunion/actions/workflows/build.yml/badge.svg)](https://github.com/rehlds/reunion/actions/workflows/build.yml) [![GitHub release (by tag)](https://img.shields.io/github/downloads/rehlds/reunion/latest/total)](https://github.com/rehlds/reunion/releases/latest) ![GitHub all releases](https://img.shields.io/github/downloads/rehlds/reunion/total) [![Percentage of issues still open](http://isitmaintained.com/badge/open/rehlds/reunion.svg)](http://isitmaintained.com/project/rehlds/reunion "Percentage of issues still open") [![GitHub license](https://img.shields.io/github/license/rehlds/reunion.svg?longCache=true&style=flat-square)](https://github.com/rehlds/reunion/blob/master/LICENSE.md) [![GitHub issues](https://img.shields.io/github/issues/rehlds/reunion.svg?longCache=true&style=flat-square)](https://github.com/rehlds/reunion/issues) [![GitHub forks](https://img.shields.io/github/forks/rehlds/reunion.svg?longCache=true&style=flat-square)](https://github.com/rehlds/reunion/network) [![GitHub stars](https://img.shields.io/github/stars/rehlds/reunion.svg?longCache=true&style=flat-square)](https://github.com/rehlds/reunion/stargazers)
+
 
 Metamod plugin that allows protocol 47 and 48 non-steam clients to connect to ReHLDS servers.<br/>
 Reunion is a continuation of the DProto project adapted for ReHLDS.<br/>
@@ -6,8 +7,8 @@ Reunion is a continuation of the DProto project adapted for ReHLDS.<br/>
 You can try playing on one of many servers that are using Reunion: [Game Tracker](http://www.gametracker.com/search/?search_by=server_variable&search_by2=reu_version)
 
 ## Downloads
-* [Release builds](https://github.com/s1lentq/reunion/releases)
-* [Dev builds](https://github.com/s1lentq/reunion/actions/workflows/build.yml)
+* [Release builds](https://github.com/rehlds/reunion/releases)
+* [Dev builds](https://github.com/rehlds/reunion/actions/workflows/build.yml)
 
 ## Environment requirement
 * ReHLDS API >= `3.10`
