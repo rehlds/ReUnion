@@ -1,4 +1,4 @@
-# Reunion [![C/C++ CI](https://github.com/rehlds/reunion/actions/workflows/build.yml/badge.svg)](https://github.com/rehlds/reunion/actions/workflows/build.yml) [![GitHub release (by tag)](https://img.shields.io/github/downloads/rehlds/reunion/latest/total)](https://github.com/rehlds/reunion/releases/latest) ![GitHub all releases](https://img.shields.io/github/downloads/rehlds/reunion/total) [![Percentage of issues still open](http://isitmaintained.com/badge/open/rehlds/reunion.svg)](http://isitmaintained.com/project/rehlds/reunion "Percentage of issues still open") [![GitHub license](https://img.shields.io/github/license/rehlds/reunion.svg?longCache=true&style=flat-square)](https://github.com/rehlds/reunion/blob/master/LICENSE.md) [![GitHub issues](https://img.shields.io/github/issues/rehlds/reunion.svg?longCache=true&style=flat-square)](https://github.com/rehlds/reunion/issues) [![GitHub forks](https://img.shields.io/github/forks/rehlds/reunion.svg?longCache=true&style=flat-square)](https://github.com/rehlds/reunion/network) [![GitHub stars](https://img.shields.io/github/stars/rehlds/reunion.svg?longCache=true&style=flat-square)](https://github.com/rehlds/reunion/stargazers)
+# ReUnion [![C/C++ CI](https://github.com/rehlds/ReUnion/actions/workflows/build.yml/badge.svg)](https://github.com/rehlds/ReUnion/actions/workflows/build.yml) [![GitHub release (by tag)](https://img.shields.io/github/downloads/rehlds/ReUnion/latest/total)](https://github.com/rehlds/ReUnion/releases/latest) ![GitHub all releases](https://img.shields.io/github/downloads/rehlds/ReUnion/total) [![Percentage of issues still open](http://isitmaintained.com/badge/open/rehlds/reunion.svg)](http://isitmaintained.com/project/rehlds/reunion "Percentage of issues still open") [![GitHub license](https://img.shields.io/github/license/rehlds/reunion.svg?longCache=true&style=flat-square)](https://github.com/rehlds/ReUnion/blob/master/LICENSE) [![GitHub issues](https://img.shields.io/github/issues/rehlds/reunion.svg?longCache=true&style=flat-square)](https://github.com/rehlds/ReUnion/issues) [![GitHub forks](https://img.shields.io/github/forks/rehlds/reunion.svg?longCache=true&style=flat-square)](https://github.com/rehlds/ReUnion/network) [![GitHub stars](https://img.shields.io/github/stars/rehlds/reunion.svg?longCache=true&style=flat-square)](https://github.com/rehlds/ReUnion/stargazers)
 
 
 Metamod plugin that allows protocol 47 and 48 non-steam clients to connect to ReHLDS servers.<br/>
@@ -7,8 +7,8 @@ Reunion is a continuation of the DProto project adapted for ReHLDS.<br/>
 You can try playing on one of many servers that are using Reunion: [Game Tracker](http://www.gametracker.com/search/?search_by=server_variable&search_by2=reu_version)
 
 ## Downloads
-* [Release builds](https://github.com/rehlds/reunion/releases)
-* [Dev builds](https://github.com/rehlds/reunion/actions/workflows/build.yml)
+* [Release builds](https://github.com/rehlds/ReUnion/releases)
+* [Dev builds](https://github.com/rehlds/ReUnion/actions/workflows/build.yml)
 
 ## Environment requirement
 * ReHLDS API >= `3.10`
