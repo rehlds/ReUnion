@@ -319,8 +319,15 @@ bool CReunionConfig::parseCfgParam()
 	if (m_AuthVersion == av_dproto)
 		m_bEnableGenPrefix2 = false;
 
-	if (m_AuthVersion >= av_reunion2018) {
-		if (m_SteamIdHashSaltLen < 16) {
+	if (m_AuthVersion >= av_reunion2018)
+	{
+		// check logical negation value to disable salt hashing
+		bool bSteamIdNoHashSalt = (m_SteamIdHashSalt[0] == '0'
+			|| !Q_stricmp(m_SteamIdHashSalt, "no")
+			|| !Q_stricmp(m_SteamIdHashSalt, "false"));
+
+		if (!bSteamIdNoHashSalt && m_SteamIdHashSaltLen < 16)
+		{
 			LCPrintf(true, "SteamIdHashSalt is not set or too short\n");
 			return false;
 		}
