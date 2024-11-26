@@ -58,6 +58,12 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Check dependencies
+        run: |
+          sudo dpkg --add-architecture i386
+          sudo apt-get update
+          sudo apt-get install -y gcc-multilib g++-multilib
+
       - name: Build
         run: |
           rm -rf build && CC=gcc CXX=g++ cmake -B build && cmake --build build -j8
