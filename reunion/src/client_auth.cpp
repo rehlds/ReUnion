@@ -61,10 +61,15 @@ void SaltSteamId(authdata_t* authdata) {
 	byte buf[MAX_HASHDATA_LEN];
 	CSizeBuf szbuf(buf, sizeof buf);
 
+	// deprecated auth version reunion2015 has a truncated ticket buffer
+	const uint32_t MAX_RAWAUTHDATA_TRUNC = 16;
+	uint32_t authKeyMaxLen = (g_ReunionConfig->getAuthVersion() == av_reunion2015)
+		? MAX_RAWAUTHDATA_TRUNC : authdata->authKeyLen;
+
 	if (g_ReunionConfig->getAuthVersion() < av_reunion2018)
 		szbuf.WriteLong(authdata->steamId);
 	if (g_ReunionConfig->getAuthVersion() > av_dproto)
-		szbuf.Write(authdata->authKey, authdata->authKeyLen);
+		szbuf.Write(authdata->authKey, authKeyMaxLen);
 
 	szbuf.Write(g_ReunionConfig->getSteamIdSalt(), g_ReunionConfig->getSteamIdSaltLen());
 
