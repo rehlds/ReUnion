@@ -138,6 +138,7 @@ CReunionConfig* CReunionConfig::createDefault()
 	cfg->m_bFixBuggedQuery = true;
 
 	cfg->m_HLTVExceptIP = 0;
+	cfg->m_bEnableQueryLimiter = true;
 	cfg->m_queriesBanLevel = 400;
 	cfg->m_floodBanTime = QUERY_FLOOD_DEFAULT_BANTIME;
 	cfg->m_allowSplitPackets = false;
