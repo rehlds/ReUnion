@@ -41,7 +41,7 @@ jobs:
           move msvc\${{ env.buildRelease }}\reunion_mm.dll publish\bin\Windows\reunion_mm.dll
 
       - name: Deploy artifacts
-        uses: actions/upload-artifact@v3.1.1
+        uses: actions/upload-artifact@v4
         with:
           name: win32
           path: publish/*
@@ -103,7 +103,7 @@ jobs:
         shell: bash
 
       - name: Deploy artifacts
-        uses: actions/upload-artifact@v3.1.1
+        uses: actions/upload-artifact@v4
         id: upload-job
         with:
           name: linux32
@@ -116,12 +116,12 @@ jobs:
 
     steps:
       - name: Deploying linux artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: linux32
 
       - name: Deploying windows artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: win32
 
@@ -131,7 +131,7 @@ jobs:
           7z a -tzip reunion-${{ needs.linux.outputs.app-version }}.zip .
 
       - name: Publish artifacts
-        uses: actions/upload-artifact@v3.1.1
+        uses: actions/upload-artifact@v4
         with:
           name: reunion-${{ needs.linux.outputs.app-version }}
           path: |
