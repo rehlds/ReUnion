@@ -37,15 +37,25 @@ int g_NumClientAuthorizers = 0;
 const char *g_RevEmuCryptKey = "_YOU_SERIOUSLY_NEED_TO_GET_LAID_";
 const uint32_t g_SteamEmuHashKey = 0xC9710266;
 
-static uint32_t revHash(const char* str)
+static uint32_t revHash(const char* str, int n = -1)
 {
 	uint32_t hash = 0x4E67C6A7;
 
-	for (int cc = *str; cc; cc = *++str) {
+	for (int cc = *str; cc && n != 0; cc = *++str, --n) {
 		hash ^= (hash >> 2) + cc + 32 * hash;
 	}
 
 	return hash;
+}
+
+// deprecated auth version reunion2015 has a truncated ticket buffer
+size_t Reunion_AuthKeyMaxLen(authdata_t* authdata)
+{
+	const uint32_t MAX_RAWAUTHDATA_TRUNCATED = 16;
+	uint32_t authKeyMaxLen = (g_ReunionConfig->getAuthVersion() == av_reunion2015)
+		? min(authdata->authKeyLen, MAX_RAWAUTHDATA_TRUNCATED) : authdata->authKeyLen;
+
+	return authKeyMaxLen;
 }
 
 void RevEmuFinishAuthorization(authdata_t* authdata, const char* authStr, size_t authKeyMaxLen, bool stripSpecialChars)
@@ -86,7 +96,7 @@ void RevEmuFinishAuthorization(authdata_t* authdata, const char* authStr, size_t
 		memcpy(authdata->authKey, authStr, authdata->authKeyLen);
 		authdata->authKey[authdata->authKeyLen] = '\0';
 
-		authdata->steamId = revHash(authdata->authKey) << 1;
+		authdata->steamId = revHash(authdata->authKey, Reunion_AuthKeyMaxLen(authdata)) << 1;
 
 		if (authStr == (char *)&volumeId)
 			LCPrintf(false, "RevEmu auth key: '%u' steamid: %u\n", (uint32_t)authStr, authdata->steamId);

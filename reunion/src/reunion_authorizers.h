@@ -85,3 +85,4 @@ class CNoSteam48Authorizer : public IClientAuthorizer {
 extern void Reunion_Init_Authorizers();
 extern client_auth_kind Reunion_Authorize_Client(authdata_t* authdata);
 extern const char* Reunion_GetAuthorizerName(client_auth_kind authKind);
+extern size_t Reunion_AuthKeyMaxLen(authdata_t* authdata);
