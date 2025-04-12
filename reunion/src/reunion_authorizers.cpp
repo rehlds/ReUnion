@@ -96,7 +96,7 @@ void RevEmuFinishAuthorization(authdata_t* authdata, const char* authStr, size_t
 		memcpy(authdata->authKey, authStr, authdata->authKeyLen);
 		authdata->authKey[authdata->authKeyLen] = '\0';
 
-		authdata->steamId = revHash(authdata->authKey, Reunion_AuthKeyMaxLen(authdata)) << 1;
+		authdata->steamId = revHash(authdata->authKey) << 1;
 
 		if (authStr == (char *)&volumeId)
 			LCPrintf(false, "RevEmu auth key: '%u' steamid: %u\n", (uint32_t)authStr, authdata->steamId);
