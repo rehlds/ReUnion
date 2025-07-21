@@ -265,8 +265,12 @@ jobs:
         with:
           name: win32
 
-      - name: Packaging
+      - name: Final signing and Packaging
         id: packaging-job
+        if: |
+          github.event_name == 'release' &&
+          github.event.action == 'published' &&
+          startsWith(github.ref, 'refs/tags/')
         run: |
 
           # new runner, niw signs
