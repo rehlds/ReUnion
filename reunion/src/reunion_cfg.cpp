@@ -271,7 +271,7 @@ bool CReunionConfig::parseCfgParam()
 
 		REU_CFG_PARSE_INT("LoggingMode", m_LogMode, int, rl_none, (rl_console|rl_logfile))
 
-		REU_CFG_PARSE_INT("AuthVersion", m_AuthVersion, auth_version, av_dproto, av_reunion2018)
+		REU_CFG_PARSE_INT("AuthVersion", m_AuthVersion, auth_version, av_dproto, av_reunion2024)
 		REU_CFG_PARSE_INT("ServerInfoAnswerType", m_ServerAnswerType, server_answer_type, sat_source, sat_hybrid)
 
 		REU_CFG_PARSE_BOOL("SC2009_RevCompatMode", m_bSC2009RevEmuCompat)

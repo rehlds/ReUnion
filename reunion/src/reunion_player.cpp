@@ -52,7 +52,7 @@ void CReunionPlayer::authenticated(int proto, client_id_kind idkind, client_auth
 	const client_id_gen_opts_t* idByIpGenOpts = g_ReunionConfig->getIdByIpGenOpts();
 
 	// use auth key type prefixes
-	bool akPrefixes = g_ReunionConfig->getAuthVersion() == av_reunion2018;
+	bool akPrefixes = g_ReunionConfig->getAuthVersion() >= av_reunion2018;
 
 	switch (m_IdKind) {
 	case CI_REAL_STEAM:

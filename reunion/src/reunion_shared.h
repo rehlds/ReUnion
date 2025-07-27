@@ -70,7 +70,8 @@ enum reuinon_log_mode {
 enum auth_version {
 	av_dproto = 1,
 	av_reunion2015 = 2,
-	av_reunion2018 = 3
+	av_reunion2018 = 3,
+	av_reunion2024 = 4
 };
 
 enum server_answer_type {
