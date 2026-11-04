@@ -22,12 +22,15 @@ bool CQueryLimiter::allowQuery(const netadr_t& adr, bool critical)
 	if (!g_ReunionConfig->enableQueryLimiter())
 		return true;
 
-	if (allowForExcept(*(uint32_t *)adr.ip, ntohs(adr.port)))
+	uint32_t adrIp;
+	memcpy(&adrIp, adr.ip, sizeof(adrIp));
+
+	if (allowForExcept(adrIp, ntohs(adr.port)))
 		return true;
 
 	for (size_t i = 0; i < MAX_STORED_QUERIES; i++)
 	{
-		if (m_lastQueries[i].ip != *(uint32 *)adr.ip) {
+		if (m_lastQueries[i].ip != adrIp) {
 			continue;
 		}
 
@@ -48,7 +51,7 @@ bool CQueryLimiter::allowQuery(const netadr_t& adr, bool critical)
 
 	// save new addr
 	size_t id = ++m_lastAdded & (MAX_STORED_QUERIES - 1);
-	m_lastQueries[id].ip = *(uint32 *)adr.ip;
+	m_lastQueries[id].ip = adrIp;
 	m_lastQueries[id].rate = 1;
 	return true;
 }
@@ -57,6 +60,12 @@ void CQueryLimiter::addExceptIPs(std::vector<ipv4_t>& exceptIPs)
 {
 	std::move(exceptIPs.begin(), exceptIPs.end(), std::back_inserter(m_exceptIPs));
 	exceptIPs.clear();
+}
+
+void CQueryLimiter::resetExceptIPs(std::vector<ipv4_t>& exceptIPs)
+{
+	m_exceptIPs.clear();
+	addExceptIPs(exceptIPs);
 }
 
 bool CQueryLimiter::allowForExcept(uint32_t ip, uint16_t port) const

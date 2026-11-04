@@ -21,6 +21,7 @@ public:
 	CQueryLimiter();
 
 	void addExceptIPs(std::vector<ipv4_t>& exceptIPs);
+	void resetExceptIPs(std::vector<ipv4_t>& exceptIPs);
 
 	bool allowQuery(const netadr_t& adr, bool critical = false);
 	bool allowForExcept(uint32_t ip, uint16_t port) const;

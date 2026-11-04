@@ -52,9 +52,13 @@ private:
 	int m_floodBanTime;
 	bool m_allowSplitPackets;
 	int m_IDClientsLimit;
+	bool m_bRejectSteamPending;
+	int m_connectionFloodBanLevel;
+	int m_connectionFloodBanTime;
 
 	size_t m_SteamIdHashSaltLen;
 	char m_SteamIdHashSalt[MAX_STEAMIDSALTLEN];
+	char m_RevEmuCryptKey[33];
 
 	client_id_gen_opts_t m_AuthIdGenOptions[CA_MAX];
 	client_id_gen_opts_t m_IPGenOptions;
@@ -63,6 +67,10 @@ public:
 	bool load(FILE *fl);
 	static CReunionConfig* createDefault();
 	static FILE* open(const char* fname);
+
+	~CReunionConfig() {
+		flushCfg();
+	}
 
 	bool parseCfgParam();
 	bool parseCfgSection(const char* section, bool (CReunionConfig::*pfnCallback)(const char *param, const char *value, int cline));
@@ -99,6 +107,10 @@ public:
 
 	size_t getSteamIdSaltLen() const {
 		return m_SteamIdHashSaltLen;
+	}
+
+	const char* getRevEmuCryptKey() const {
+		return m_RevEmuCryptKey;
 	}
 
 	uint32 getHLTVExceptIP() const {
@@ -139,6 +151,18 @@ public:
 
 	int getIDClientsLimit() const {
 		return m_IDClientsLimit;
+	}
+
+	bool rejectSteamPending() const {
+		return m_bRejectSteamPending;
+	}
+
+	int getConnectionFloodBanLevel() const {
+		return m_connectionFloodBanLevel;
+	}
+
+	int getConnectionFloodBanTime() const {
+		return m_connectionFloodBanTime;
 	}
 };
 

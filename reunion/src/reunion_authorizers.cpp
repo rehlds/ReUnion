@@ -34,7 +34,6 @@ const char *g_AuthorizerName[] =
 
 IClientAuthorizer* g_ClientAuthorizers[MAX_CLIENT_AUTHORIZERS];
 int g_NumClientAuthorizers = 0;
-const char *g_RevEmuCryptKey = "_YOU_SERIOUSLY_NEED_TO_GET_LAID_";
 const uint32_t g_SteamEmuHashKey = 0xC9710266;
 
 static uint32_t revHash(const char* str, int n = -1)
@@ -131,7 +130,7 @@ bool RevEmu2009to2013Authorize(ticket_t* ticket, authdata_t* authdata)
 		return CA_UNKNOWN;
 
 	CRijndael hCrypt1;
-	hCrypt1.MakeKey(g_RevEmuCryptKey, CRijndael::sm_chain0, REVEMU_KEY_LEN, REVEMU_BLOCK_SIZE);
+	hCrypt1.MakeKey(g_ReunionConfig->getRevEmuCryptKey(), CRijndael::sm_chain0, REVEMU_KEY_LEN, REVEMU_BLOCK_SIZE);
 
 	char DecryptedAuthKey[REVEMU_KEY_LEN];
 	if (!hCrypt1.DecryptBlock(ticket->EncryptedKey, DecryptedAuthKey))
@@ -331,7 +330,7 @@ client_auth_kind CAVSMPAuthorizer::authorize(authdata_t* authdata)
 		authdata->steamId = accId;
 		authdata->authKeyKind = AK_FILEID; // file
 		authdata->authKeyLen = sizeof(uint32_t);
-		*(uint32_t *)authdata->authKey = accId;
+		memcpy(authdata->authKey, &accId, sizeof(uint32_t));
 	}
 
 	return CA_AVSMP;
@@ -368,7 +367,7 @@ client_auth_kind COldRevEmuAuthorizer::authorize(authdata_t* authdata)
 		authdata->steamId = hash << 1;
 		authdata->authKeyKind = AK_VOLUMEID;
 		authdata->authKeyLen = sizeof(uint32_t);
-		*(uint32_t *)authdata->authKey = volumeId;
+		memcpy(authdata->authKey, &volumeId, sizeof(uint32_t));
 	}
 
 	return CA_OLD_REVEMU;
@@ -409,9 +408,9 @@ client_auth_kind CSteamEmuAuthorizer::authorize(authdata_t* authdata)
 		authdata->authKeyLen = sizeof(uint32_t);
 
 		if (g_ReunionConfig->getAuthVersion() >= av_reunion2018)
-			*(uint32_t *)authdata->authKey = volumeId;
+			memcpy(authdata->authKey, &volumeId, sizeof(uint32_t));
 		else
-			*(uint32_t *)authdata->authKey = accId;
+			memcpy(authdata->authKey, &accId, sizeof(uint32_t));
 	}
 
 	return CA_STEAM_EMU;
@@ -446,7 +445,7 @@ client_auth_kind CSXEIAuthorizer::authorize(authdata_t* authdata)
 
 		if (g_ReunionConfig->getAuthVersion() >= av_reunion2018) {
 			authdata->authKeyLen = sizeof(uint32_t);
-			*(uint32_t *)authdata->authKey = sxeId;
+			memcpy(authdata->authKey, &sxeId, sizeof(uint32_t));
 		}
 		else {
 			authdata->authKeyLen = min(strlen(hid), sizeof authdata->authKey);
@@ -526,6 +525,15 @@ void Reunion_Init_Authorizers()
 	Reunion_Add_Authorizer(new CSteamEmuAuthorizer());
 	Reunion_Add_Authorizer(new CNoSteam47Authorizer());
 	Reunion_Add_Authorizer(new CNoSteam48Authorizer());
+}
+
+void Reunion_Free_Authorizers()
+{
+	for (int i = 0; i < g_NumClientAuthorizers; i++) {
+		delete g_ClientAuthorizers[i];
+		g_ClientAuthorizers[i] = nullptr;
+	}
+	g_NumClientAuthorizers = 0;
 }
 
 client_auth_kind Reunion_Authorize_Client(authdata_t* authdata)

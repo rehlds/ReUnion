@@ -78,8 +78,10 @@ void SaltSteamId(authdata_t* authdata) {
 	int shaLen;
 	const char *hash = hSha.RawHash(shaLen);
 
-	// Set new SteamID
-	authdata->steamId = *(unsigned int *)(hash + 8);
+	// Set new SteamID (safe unaligned read)
+	uint32_t newSteamId;
+	memcpy(&newSteamId, hash + 8, sizeof(newSteamId));
+	authdata->steamId = newSteamId;
 }
 
 uint64_t SteamByIp(uint32_t ip)
@@ -94,8 +96,79 @@ uint64_t SteamByIp(uint32_t ip)
 	return CSteamID(accId, k_unSteamUserDesktopInstance, k_EUniversePublic, k_EAccountTypeIndividual).ConvertToUint64();
 }
 
+// Connection flood protection: limits the number of connections from a single IP
+// to mitigate fake-player floods where one IP keeps reconnecting with different SteamIDs.
+#define MAX_CONNECT_TRACK_IPS	64
+#define CONNECT_FLOOD_WINDOW	60.0	// 1 minute sliding window
+
+struct connect_track_t
+{
+	uint32_t ip;
+	double firstSeen;
+	int count;
+};
+
+static connect_track_t g_connectTracks[MAX_CONNECT_TRACK_IPS];
+static int g_connectTrackCount = 0;
+
+// Returns false if the IP should be rejected (connection flood detected).
+static bool CheckConnectionFlood(uint32_t ip)
+{
+	const int banLevel = g_ReunionConfig->getConnectionFloodBanLevel();
+	if (banLevel <= 0)
+		return true;
+
+	const double now = g_RehldsFuncs->GetRealTime();
+
+	for (int i = 0; i < g_connectTrackCount; i++)
+	{
+		if (g_connectTracks[i].ip != ip)
+			continue;
+
+		if (now - g_connectTracks[i].firstSeen > CONNECT_FLOOD_WINDOW)
+		{
+			g_connectTracks[i].firstSeen = now;
+			g_connectTracks[i].count = 1;
+			return true;
+		}
+
+		if (++g_connectTracks[i].count > banLevel)
+		{
+			g_ServerInfo->banAddress(util_adr_to_string(ip), g_ReunionConfig->getConnectionFloodBanTime());
+			g_connectTracks[i] = g_connectTracks[--g_connectTrackCount];
+			LCPrintf(true, "Connection flood detected from %s, banned\n", util_adr_to_string(ip));
+			return false;
+		}
+		return true;
+	}
+
+	if (g_connectTrackCount < MAX_CONNECT_TRACK_IPS)
+	{
+		g_connectTracks[g_connectTrackCount].ip = ip;
+		g_connectTracks[g_connectTrackCount].firstSeen = now;
+		g_connectTracks[g_connectTrackCount].count = 1;
+		g_connectTrackCount++;
+	}
+
+	return true;
+}
+
 bool Reunion_FinishClientAuth(CReunionPlayer* reunionPlr, USERID_t* userid, client_auth_context_t* ctx)
 {
+	// reject already-banned IPs (connection flood / query flood bans)
+	if (g_ServerInfo->isAddressBanned(*ctx->adr)) {
+		g_RehldsFuncs->RejectConnection(ctx->adr, "You have been banned from this server.\n");
+		reunionPlr->clear();
+		return false;
+	}
+
+	// connection flood protection
+	if (!CheckConnectionFlood(ctx->ipaddr)) {
+		g_RehldsFuncs->RejectConnection(ctx->adr, "Too many connections from your IP.\n");
+		reunionPlr->clear();
+		return false;
+	}
+
 	client_auth_kind authkind;
 	client_id_kind idkind = CI_UNKNOWN;
 
@@ -164,6 +237,19 @@ bool Reunion_FinishClientAuth(CReunionPlayer* reunionPlr, USERID_t* userid, clie
 	// check for pending id
 	if (IsNumericAuthKind(authkind) && !IsValidId(userid->m_SteamID)) {
 		authkind = CA_STEAM_PENDING;
+	}
+
+	// hard reject STEAM_ID_PENDING clients (exploit protection).
+	// Runs regardless of cid_SteamPending, so a client that ends up with a
+	// STEAM_ID_PENDING id is always rejected when RejectSteamPending = 1.
+	if (authkind == CA_STEAM_PENDING && g_ReunionConfig->rejectSteamPending()) {
+		if (ctx->authentificatedInSteam) {
+			g_ISteamGameServer->SendUserDisconnect(userid->m_SteamID);
+			ctx->authentificatedInSteam = false;
+		}
+		Reunion_Reject_Deprecated(authkind);
+		reunionPlr->clear();
+		return false;
 	}
 
 	// add prefix
@@ -279,7 +365,7 @@ int SV_CheckProtocol_hook(IRehldsHook_SV_CheckProtocol* chain, netadr_t *adr, in
 	}
 
 	g_CurrentAuthContext->adr = adr;
-	g_CurrentAuthContext->ipaddr = *(uint32 *)&adr->ip[0];
+	memcpy(&g_CurrentAuthContext->ipaddr, adr->ip, sizeof(g_CurrentAuthContext->ipaddr));
 	g_CurrentAuthContext->protocol = nProtocol;
 
 	if (nProtocol < 47) {
@@ -331,10 +417,10 @@ int SV_CheckKeyInfo_hook(IRehldsHook_SV_CheckKeyInfo* chain, netadr_t *adr, char
 	*pAuthProtocol = PROTOCOL_STEAM; // we want to Steam_NotifyClientConnect be called for every client
 
 	strncpy(pszRaw, g_engfuncs.pfnInfoKeyValue(protinfo, "raw"), 32);
-	pszRaw[33] = '\0';
+	pszRaw[32] = '\0';
 
 	strncpy(cdkey, g_engfuncs.pfnInfoKeyValue(protinfo, "cdkey"), 32);
-	cdkey[33] = '\0';
+	cdkey[32] = '\0';
 
 	return TRUE;
 }

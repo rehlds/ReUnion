@@ -210,7 +210,7 @@ void Reunion_Free_Players()
 bool Reunion_Init_Players()
 {
 	Reunion_Free_Players();
-	g_Players = (CReunionPlayer **)malloc(sizeof(CReunionPlayer) * g_RehldsSvs->GetMaxClientsLimit());
+	g_Players = (CReunionPlayer **)malloc(sizeof(CReunionPlayer *) * g_RehldsSvs->GetMaxClientsLimit());
 	if (!g_Players)
 	{
 		LCPrintf(true, "Failed to allocate memory to clients limit %d\n", g_RehldsSvs->GetMaxClientsLimit());

@@ -61,6 +61,7 @@ public:
 	void banAddress(const char* addr, uint32_t time);
 	void unbanAddress(const char* addr);
 	void printBans();
+	void reloadConfig();
 
 protected:
 	void sendQueryChallenge(const netadr_t& to);

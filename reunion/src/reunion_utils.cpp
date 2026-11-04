@@ -120,18 +120,36 @@ bool IsValidId(uint32 authId) {
 	return authId > STEAM_ID_PENDING;
 }
 
+// Safe unaligned read helper to avoid undefined behavior on strict-alignment architectures (ARM, etc)
+static inline uint32_t ReadUint32Unaligned(const void *ptr)
+{
+	uint32_t v;
+	memcpy(&v, ptr, sizeof(v));
+	return v;
+}
+
+static inline size_t ReadSizeTUnaligned(const void *ptr)
+{
+	size_t v;
+	memcpy(&v, ptr, sizeof(v));
+	return v;
+}
+
 bool IsValidSteamTicket(const uint8 *pvSteam2Key, size_t ucbSteam2Key) {
 	if (ucbSteam2Key < 16) {
 		return false;
 	}
 
-	const size_t TicketOff = *(size_t *)pvSteam2Key;
-	if (TicketOff < 0 || (TicketOff + 16) > ucbSteam2Key) {
+	const size_t TicketOff = ReadSizeTUnaligned(pvSteam2Key);
+	// TicketOff is attacker-controlled. Use subtraction instead of addition
+	// to avoid integer overflow: if TicketOff is near SIZE_MAX, (TicketOff + 16)
+	// would wrap around and bypass the bounds check, leading to an out-of-bounds read.
+	if (TicketOff > ucbSteam2Key - 16) {
 		return false;
 	}
 
-	const int* cc = (int *)(pvSteam2Key + 4 + TicketOff);
-	return cc[0] >= 0 && cc[1] >= 0;
+	const int *cc = (const int *)(pvSteam2Key + 4 + TicketOff);
+	return ReadUint32Unaligned(cc) >= 0 && ReadUint32Unaligned(cc + 1) >= 0;
 }
 
 bool IsHddsnNumber(const char* authstring)
