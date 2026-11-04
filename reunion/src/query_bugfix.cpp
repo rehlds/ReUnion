@@ -8,7 +8,8 @@ CBuggedQueryFix::CBuggedQueryFix()
 bool CBuggedQueryFix::isBuggedQuery(const netadr_t& from)
 {
 	double realtime = g_ServerInfo->getRealTime();
-	uint32 ip = *(uint32 *)from.ip;
+	uint32 ip;
+	memcpy(&ip, from.ip, sizeof(ip));
 
 	for (last_query_t& q : m_lastQueries) {
 		if (q.ip == ip) {

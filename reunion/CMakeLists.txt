@@ -119,7 +119,6 @@ set(REUNION_SRCS
 	"src/reunion_rehlds_api.cpp"
 	"src/reunion_utils.cpp"
 	"src/Rijndael.cpp"
-	"src/RijndaelChanged.cpp"
 	"src/sdk_util.cpp"
 	"src/server_info.cpp"
 	"src/sha2.cpp"

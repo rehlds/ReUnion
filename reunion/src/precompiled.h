@@ -23,7 +23,6 @@
 #include "sha2.h"
 #include "murmur3.h"
 #include "Rijndael.h"
-#include "RijndaelChanged.h"
 
 #include "client_auth.h"
 #include "reunion_authorizers.h"

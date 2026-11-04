@@ -112,7 +112,7 @@ void MurmurHash3_x86_32(const void *key, int len, uint32 seed, void *out)
 	h1 ^= len;
 	h1 = fmix32(h1);
 
-	*(uint32*)out = h1;
+	memcpy(out, &h1, sizeof(h1));
 }
 
 //-----------------------------------------------------------------------------

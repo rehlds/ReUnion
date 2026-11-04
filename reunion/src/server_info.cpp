@@ -485,7 +485,9 @@ bool CServerInfo::handleQuery(IRehldsHook_PreprocessPacket* chain, uint8* data, 
 
 bool CServerInfo::isAddressBanned(const netadr_t& from) const
 {
-	return m_queryBanList.isBanned(*(uint32 *)from.ip);
+	uint32_t fromIp;
+	memcpy(&fromIp, from.ip, sizeof(fromIp));
+	return m_queryBanList.isBanned(fromIp);
 }
 
 void CServerInfo::banAddress(const char* addr, uint32_t time)
@@ -501,6 +503,11 @@ void CServerInfo::unbanAddress(const char* addr)
 void CServerInfo::printBans()
 {
 	m_queryBanList.print();
+}
+
+void CServerInfo::reloadConfig()
+{
+	m_queryLimiter.resetExceptIPs(g_ReunionConfig->getExceptIPs());
 }
 
 void CServerInfo::startFrame()

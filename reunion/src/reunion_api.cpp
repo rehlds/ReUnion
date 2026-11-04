@@ -138,6 +138,7 @@ const char *CReunionApiImpl::GetClientAuthdataString(int index, char *data, int 
 
 	auto* plr = g_Players[index];
 	char raw[MAX_AUTHKEY_LEN];
+	memset(raw, 0, sizeof(raw)); // zero-initialize to avoid leaking stack data when authKeyLen < 4
 	size_t rawlen;
 
 	rawlen = plr->getRawAuthData(raw, sizeof raw);
@@ -154,7 +155,12 @@ const char *CReunionApiImpl::GetClientAuthdataString(int index, char *data, int 
 	case CA_STEAM_EMU:
 	case CA_OLD_REVEMU:
 	case CA_AVSMP:
-		snprintf(data, maxlen, "%u", *(uint32 *)raw);
+		{
+			uint32_t rawVal = 0;
+			if (rawlen >= 4)
+				memcpy(&rawVal, raw, sizeof(rawVal));
+			snprintf(data, maxlen, "%u", rawVal);
+		}
 		break;
 
 	case CA_REVEMU:
@@ -281,6 +287,36 @@ void Cmd_reu_Bans()
 	g_ServerInfo->printBans();
 }
 
+void Cmd_reu_Reload()
+{
+	const char* oldSalt = g_ReunionConfig ? g_ReunionConfig->getSteamIdSalt() : "";
+
+	if (!Reunion_Cfg_LoadDefault()) {
+		util_console_print("Failed to reload config\n");
+		return;
+	}
+
+	g_ServerInfo->reloadConfig();
+
+	if (strcmp(oldSalt, g_ReunionConfig->getSteamIdSalt()) != 0) {
+		util_console_print("WARNING: SteamIdHashSalt changed. SteamIDs of players connecting from now on will differ!\n");
+	}
+
+	util_console_print("Config reloaded successfully\n");
+}
+
+void Cmd_reu_Stats()
+{
+	util_console_print("=== ReUnion Statistics ===\n");
+	util_console_print("Connected players: %u\n", (unsigned int)Reunion_GetConnectedPlayersCount());
+	util_console_print("AuthVersion: %d\n", (int)g_ReunionConfig->getAuthVersion());
+	util_console_print("RejectSteamPending: %d\n", g_ReunionConfig->rejectSteamPending() ? 1 : 0);
+	util_console_print("ConnectionFloodBanLevel: %d conn/min\n", g_ReunionConfig->getConnectionFloodBanLevel());
+	util_console_print("ConnectionFloodBanTime: %d min\n", g_ReunionConfig->getConnectionFloodBanTime());
+	util_console_print("QueryFloodBanLevel: %d pps\n", g_ReunionConfig->getQueriesBanLevel());
+	g_ServerInfo->printBans();
+}
+
 void Reunion_Api_Init()
 {
 	g_engfuncs.pfnCvar_RegisterVariable(&cv_dp_r_protocol);
@@ -293,6 +329,8 @@ void Reunion_Api_Init()
 	g_engfuncs.pfnAddServerCommand("reu_ban", &Cmd_reu_Ban);
 	g_engfuncs.pfnAddServerCommand("reu_unban", &Cmd_reu_Unban);
 	g_engfuncs.pfnAddServerCommand("reu_bans", &Cmd_reu_Bans);
+	g_engfuncs.pfnAddServerCommand("reu_reload", &Cmd_reu_Reload);
+	g_engfuncs.pfnAddServerCommand("reu_stats", &Cmd_reu_Stats);
 
 	g_RehldsFuncs->RegisterPluginApi("reunion", &g_ReunionApi);
 }

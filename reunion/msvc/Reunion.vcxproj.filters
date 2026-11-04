@@ -66,9 +66,6 @@
     <ClCompile Include="..\src\public_amalgamation.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\RijndaelChanged.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\murmur3.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -126,9 +123,6 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\src\osconf.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\RijndaelChanged.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\src\murmur3.h">
